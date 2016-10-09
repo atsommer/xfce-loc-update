@@ -13,9 +13,9 @@ import os
 import sys
 import inspect
 if sys.version_info.major == 3:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, URLError
 elif sys.version_info.major == 2:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, URLError
 
 def XMLval(xml, key):
     #return the value of the key using very simple XML parsing
@@ -53,50 +53,62 @@ if given:
     arg = arg.replace(" ","%20").strip()
     if verbose:
         print( "Using given " + arg)
-    
-    #First do a smart search to find the place    
-    url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
-    content1=str(urlopen(url1).read())
     LAT = "lat"
     LON = "lng"
     CITY = "name"
     COUNTRY = "countryCode"
-    #ZIP = "postalcode"
-    if verbose:
-        print(content1)
-    loc_dict = XMLdict(content1,[LAT,LON,CITY,COUNTRY])
-    geoID = XMLval(content1, "geonameId")
-    
-    #Now get more complete information to fill in the region/state and timezone    
-    url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
-    content2 = str(urlopen(url2).read())
     REGION = "adminCode1"
     TIMEZONE = "timezone"
-    loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
-#    
-#    lat = loc_dict[LAT]
-#    lon = loc_dict[LON]
-#    url3 = "http://api.geonames.org/timezone?lat=%s&lng=%s&username=%s" % (lat,lon,uname)
-#    TIMEZONE = "timezoneId"
-#    content3=str(urlopen(url3).read())
-#    loc_dict.update( XMLdict(content3,[TIMEZONE]) )
+    try:
+        #First do a smart search to find the place    
+        url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
+        content1=str(urlopen(url1).read())
+        if verbose:
+            print(content1)
+        loc_dict = XMLdict(content1,[LAT,LON,CITY,COUNTRY])
+        geoID = XMLval(content1, "geonameId")
+        
+        #Now get more complete information to fill in the region/state and timezone    
+        url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
+        content2 = str(urlopen(url2).read())
     
+        loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
+    except URLError:
+        #local
+        if verbose:
+            print("No internet, using local")
+        arg= sys.argv[1].strip()
+        localpath = os.path.join(scriptpath,"local",arg)
+        if os.path.exists(localpath):
+            if verbose:
+                print(localpath)
+            with open(localpath) as f:
+                content=f.read()
+            loc_dict = XMLdict(content,[LAT,LON,CITY,COUNTRY,REGION,TIMEZONE])
+        else:
+            if verbose:
+                print("File not found")
+            sys.exit()
     if verbose:
-        print( loc_dict)
+        print(loc_dict)
 else:    
-    
-    file_like = urlopen("http://geoip.ubuntu.com/lookup")
-    content = str(file_like.read())
-    if verbose:
-        print(content)
-    LAT = "Latitude"
-    LON = "Longitude"
-    CITY = "City"
-    COUNTRY = "CountryCode3"
-    REGION = "RegionCode"
-    ZIP = "ZipPostalCode"
-    TIMEZONE = "TimeZone"
-    loc_dict = XMLdict(content,[LAT,LON,CITY,COUNTRY,REGION,ZIP,TIMEZONE])
+    try:
+        file_like = urlopen("http://geoip.ubuntu.com/lookup")
+        content = str(file_like.read())
+        if verbose:
+            print(content)
+        LAT = "Latitude"
+        LON = "Longitude"
+        CITY = "City"
+        COUNTRY = "CountryCode3"
+        REGION = "RegionCode"
+        ZIP = "ZipPostalCode"
+        TIMEZONE = "TimeZone"
+        loc_dict = XMLdict(content,[LAT,LON,CITY,COUNTRY,REGION,ZIP,TIMEZONE])
+    except URLError:
+        if verbose:
+            print("No internet, and no clue given, exiting")
+        sys.exit()
 
 #Modify the Weather settings file
 cfg_file = os.path.expanduser("~/.config/xfce4/panel/weather-3.rc")
