@@ -20,7 +20,8 @@ def XMLval(xml, key):
     #return the value of the key using very simple XML parsing
     try:
         #val =  (xml.split("<%s>" % key)[1]).split("</%s>" % key)[0]
-        val =  (xml.split("<%s>" % key)[1]).split("</")[0]
+        val = xml.split("<%s" % key)[1].split(">")[1].split("</")[0].strip()
+        #val =  (xml.split("<%s>" % key)[1]).split("</")[0]
     except IndexError:
         return ""
     else:
@@ -30,36 +31,56 @@ def XMLdict(xml, keylist):
     #return a dictionary of values from XML string
     return {key: XMLval(xml, key) for key in keylist}
 
-verbose = bool(0)
+verbose = bool(1) ####
+given = (len(sys.argv) > 1)
+given = True ####
 
-if len(sys.argv) > 1:
+uname = "demo" #default user name, limited usage
+try:
+    with open("geonames") as f:
+        uname = f.read().strip()
+except IOError:
+    pass
+
+    
+if verbose:
+    print(uname)
+
+if given:
     #use the given location string
-    arg = sys.argv[1].replace(" ","").strip()
+#    arg = sys.argv[1]
+    arg = "10006"
+    arg = arg.replace(" ","%20").strip()
     if verbose:
         print( "Using given " + arg)
-    url1 = "http://api.geonames.org/postalCodeSearch?placename=%s&maxRows=1&username=seventhsam" % arg
+    
+    #First do a smart search to find the place    
+    url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
+    content1=urlopen(url1).read()
     LAT = "lat"
     LON = "lng"
     CITY = "name"
     COUNTRY = "countryCode"
-    REGION = "adminCode1"
-    ZIP = "postalcode"
-    TIMEZONE = "timezoneId"
-    
-    content1=urlopen(url1).read()
+    #ZIP = "postalcode"
     if verbose:
-        print( content1)
-    loc_dict1 = XMLdict(content1,[LAT,LON,CITY,COUNTRY,REGION,ZIP])
+        print(content1)
+    loc_dict = XMLdict(content1,[LAT,LON,CITY,COUNTRY])
+    geoID = XMLval(content1, "geonameId")
     
-    lat = loc_dict1[LAT]
-    lon = loc_dict1[LON]
-    url2 = "http://api.geonames.org/timezone?lat=%s&lng=%s&username=seventhsam" % (lat,lon)
-    content2=urlopen(url2).read()
-    loc_dict2 = XMLdict(content2,[TIMEZONE])
+    #Now get more complete information to fill in the region/state and timezone    
+    url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
+    content2 = urlopen(url2).read()
+    REGION = "adminCode1"
+    TIMEZONE = "timezone"
+    loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
+#    
+#    lat = loc_dict[LAT]
+#    lon = loc_dict[LON]
+#    url3 = "http://api.geonames.org/timezone?lat=%s&lng=%s&username=%s" % (lat,lon,uname)
+#    TIMEZONE = "timezoneId"
+#    content3=urlopen(url3).read()
+#    loc_dict.update( XMLdict(content3,[TIMEZONE]) )
     
-    loc_dict = {}
-    loc_dict.update(loc_dict1)
-    loc_dict.update(loc_dict2)
     if verbose:
         print( loc_dict)
 else:    
@@ -93,8 +114,8 @@ with open(cfg_file) as f:
             cfg_dict[LHS] = RHS
 
 #2. update the parameters
-loc_name = "%s, %s %s %s" % (loc_dict[CITY], loc_dict[REGION],
-                             loc_dict[ZIP], loc_dict[COUNTRY])
+loc_name = "%s, %s %s" % (loc_dict[CITY], loc_dict[REGION],
+                             loc_dict[COUNTRY])
 cfg_dict["lat"] = loc_dict[LAT]
 cfg_dict["lon"] = loc_dict[LON]
 cfg_dict["timezone"] = loc_dict[TIMEZONE]

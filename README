@@ -6,21 +6,34 @@ currently updates the following:
     system time zone
     weather app location
     
-Installation:
+Installation (local):
 ---------------------
 download the code and put it somewhere you want it to stay (THE_PATH)
 run the install script to create symlinks in ~/bin
 $ install-loc-update 
 * keep the files you downloaded in THE_PATH, they are called via symlinks
 
+Optional: If you have a geonames account,
+create a file called THE_PATH/geonames containing just your username
+Otherwise, you will be using the "demo" account which occasionally hits a limit
+
 Usage:
 ---------------------
 call the main script from anywhere, it's on your path:
-$ update-loc  #guesses your location using Ubuntu GeoIP web service
-OR
 $ update-loc [info]
-use the given info, such as a zip code or city,state to determine location
 
+You can use info to specify a postal code, city, state, etc.
+If info is not given, your location will be determined automatically, but 
+imprecisely. Both modes require an internet connection.
+examples strings for info:
+    "new york"
+    cambridge
+    cambridge,uk
+    paris
+    "paris, tx"
+    chicago
+    90210
+    
 
 Uninstall:
 ----------------------
