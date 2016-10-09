@@ -1,0 +1,45 @@
+#!/bin/bash
+#Updates the location on an xfce system:
+#   system time zone, weather app location
+#
+#uses Ubuntu geoIP web service to get the location
+
+# Steps:
+# 0. closes xfce4-panel
+# 1. python script: 
+#       a. lookup location, and 
+#       b. modify weather config file
+#       c. return time zone
+# 2. set system time zone
+# 3. start xfce4-panel
+
+#0.
+xfce4-panel -q
+
+#1.
+echo "Updating weather app location"
+if [ $# -eq 0 ]
+    then
+        echo "Asking Ubuntu.com where I am"
+        TIMEZONE="$(weather-location)"
+    else
+        echo "Using given location"
+        TIMEZONE=$(weather-location "$1")
+fi
+
+#2.
+ZONEPATH=/usr/share/zoneinfo/${TIMEZONE}
+echo "Updating system time zone"
+echo $TIMEZONE
+#check if it's a real time zone
+if [ -f $ZONEPATH ]
+    then
+        echo "Time zone is valid, setting"
+        echo $TIMEZONE | sudo tee /etc/timezone > /dev/null
+        sudo ln -sf $ZONEPATH /etc/localtime
+    else
+        echo "Time zone is NOT valid, ignoring"
+fi
+
+#3.
+( xfce4-panel & ) > /dev/null 2>&1
