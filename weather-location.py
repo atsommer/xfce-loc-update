@@ -100,31 +100,31 @@ else:
 
 #Modify the Weather settings file
 cfg_file = os.path.expanduser("~/.config/xfce4/panel/weather-3.rc")
-
-#0. make a backup copy
-shutil.copyfile(cfg_file, cfg_file+".backup")
-
-#1. read the file
-cfg_dict=OrderedDict()
-with open(cfg_file) as f:
-    wrc_lines = f.readlines()
-    for line in wrc_lines:
-        line = line.strip()
-        if line:
-            #print( line)
-            LHS, RHS = line.split("=",1)            
-            cfg_dict[LHS] = RHS
-
-#2. update the parameters
-loc_name = "%s, %s %s" % (loc_dict[CITY], loc_dict[REGION],
-                             loc_dict[COUNTRY])
-cfg_dict["lat"] = loc_dict[LAT]
-cfg_dict["lon"] = loc_dict[LON]
-cfg_dict["timezone"] = loc_dict[TIMEZONE]
-cfg_dict["loc_name"] = loc_name
-with open(cfg_file, "w") as f:
-    for key in cfg_dict:
-        f.write("%s=%s\n" % (key, cfg_dict[key]) )
+if os.path.exists(cfg_file):
+    #0. make a backup copy
+    shutil.copyfile(cfg_file, cfg_file+".backup")
+    
+    #1. read the file
+    cfg_dict=OrderedDict()
+    with open(cfg_file) as f:
+        wrc_lines = f.readlines()
+        for line in wrc_lines:
+            line = line.strip()
+            if line:
+                #print( line)
+                LHS, RHS = line.split("=",1)            
+                cfg_dict[LHS] = RHS
+    
+    #2. update the parameters
+    loc_name = "%s, %s %s" % (loc_dict[CITY], loc_dict[REGION],
+                                 loc_dict[COUNTRY])
+    cfg_dict["lat"] = loc_dict[LAT]
+    cfg_dict["lon"] = loc_dict[LON]
+    cfg_dict["timezone"] = loc_dict[TIMEZONE]
+    cfg_dict["loc_name"] = loc_name
+    with open(cfg_file, "w") as f:
+        for key in cfg_dict:
+            f.write("%s=%s\n" % (key, cfg_dict[key]) )
 
 #print the time zone
 print(loc_dict[TIMEZONE])

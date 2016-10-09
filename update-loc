@@ -37,7 +37,8 @@ echo $TIMEZONE
 #check if it's a real time zone
 if [ -f $ZONEPATH ]
     then
-        echo "Time zone is valid, setting"
+        echo "Time zone is valid"
+        echo "setting system time zone (uses root privileges)"
         echo $TIMEZONE | sudo tee /etc/timezone > /dev/null
         sudo ln -sf $ZONEPATH /etc/localtime
     else
