@@ -31,25 +31,21 @@ def XMLdict(xml, keylist):
     #return a dictionary of values from XML string
     return {key: XMLval(xml, key) for key in keylist}
 
-verbose = bool(1) ####
+verbose = bool(0) ####
 given = (len(sys.argv) > 1)
-given = True ####
 
 uname = "demo" #default user name, limited usage
 try:
     with open("geonames") as f:
         uname = f.read().strip()
 except IOError:
-    pass
-
-    
+    pass  
 if verbose:
     print(uname)
 
 if given:
     #use the given location string
-#    arg = sys.argv[1]
-    arg = "10006"
+    arg = sys.argv[1]
     arg = arg.replace(" ","%20").strip()
     if verbose:
         print( "Using given " + arg)
