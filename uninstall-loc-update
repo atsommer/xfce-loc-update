@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#remove the symlinks:
+rm ~/bin/update-loc
+rm ~/bin/weather-location
+

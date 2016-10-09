@@ -1,0 +1,17 @@
+#!/bin/bash
+# make sym links in ~/bin
+
+SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in
+SCRIPTPATH=$(dirname "$SCRIPT")
+echo $SCRIPTPATH
+
+UPDATELOC=$SCRIPTPATH/update-loc
+WEATHERPY=$SCRIPTPATH/weather-location.py
+
+chmod +x "$UPDATELOC"
+chmod +x "$WEATHERPY"
+
+ln -sf $UPDATELOC ~/bin/update-loc
+ln -sf $WEATHERPY ~/bin/weather-location
+
