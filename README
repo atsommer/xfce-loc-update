@@ -10,8 +10,12 @@ Installation (local):
 ---------------------
 download the code and put it somewhere you want it to stay (THE_PATH)
 run the install script to create symlinks in ~/bin
-$ install-loc-update 
-* keep the files you downloaded in THE_PATH, they are called via symlinks
+$ bash install-loc-update 
+keep the files you downloaded in THE_PATH, they are called via symlinks
+
+Make sure your PATH includes ~/bin 
+If it doesn't, add the following at the end of ~/.bashrc:
+PATH=~/bin:$PATH
 
 Optional: If you have a geonames account,
 create a file called THE_PATH/geonames containing just your username
@@ -38,7 +42,7 @@ examples strings for info:
 Uninstall:
 ----------------------
 go to THE_PATH and run:
-$ uninstall-loc-update
+$ bash uninstall-loc-update
 to remove the symlinks
 Then delete THE_PATH
 
