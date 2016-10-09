@@ -11,6 +11,7 @@ import shutil
 from collections import OrderedDict
 import os
 import sys
+import inspect
 if sys.version_info.major == 3:
     from urllib.request import urlopen
 elif sys.version_info.major == 2:
@@ -35,8 +36,11 @@ verbose = bool(0) ####
 given = (len(sys.argv) > 1)
 
 uname = "demo" #default user name, limited usage
+scriptpath = os.path.dirname(os.path.realpath(inspect.getfile(inspect.currentframe())))
+if verbose:
+    print(scriptpath)
 try:
-    with open("geonames") as f:
+    with open(os.path.join(scriptpath,"geonames")) as f:
         uname = f.read().strip()
 except IOError:
     pass  
