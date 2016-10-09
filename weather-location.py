@@ -60,6 +60,10 @@ if given:
     TIMEZONE = "timezone"
     #First try local:
     localpath = os.path.join(scriptpath,"local",arg)
+    locallower = os.path.join(scriptpath,"local",arg.lower())    
+    if (not os.path.exists(localpath)) and os.path.exists(locallower):
+        localpath = locallower
+        
     if os.path.exists(localpath):
         if verbose:
             print(localpath)
