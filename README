@@ -26,9 +26,13 @@ Usage:
 call the main script from anywhere, it's on your path:
 $ update-loc [info]
 
-You can use info to specify a postal code, city, state, etc.
-If info is not given, your location will be determined automatically, but 
-imprecisely. Both modes require an internet connection.
+You can use info to specify a postal code, city, state, etc. or a nickname.
+The nickname refers to a location whose information is stored locally in
+THE_PATH/local. If info does not match one of the local nicknames, it will
+be used as a query to a web service.
+If info is not given, your location will be determined automatically using
+a web service.
+
 examples strings for info:
     "new york"
     cambridge

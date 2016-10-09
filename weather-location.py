@@ -49,45 +49,43 @@ if verbose:
 
 if given:
     #use the given location string
-    arg = sys.argv[1]
-    arg = arg.replace(" ","%20").strip()
+    arg = sys.argv[1].strip()
     if verbose:
-        print( "Using given " + arg)
+        print( "Using given: " + arg)
     LAT = "lat"
     LON = "lng"
     CITY = "name"
     COUNTRY = "countryCode"
     REGION = "adminCode1"
     TIMEZONE = "timezone"
-    try:
-        #First do a smart search to find the place    
-        url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
-        content1=str(urlopen(url1).read())
+    #First try local:
+    localpath = os.path.join(scriptpath,"local",arg)
+    if os.path.exists(localpath):
         if verbose:
-            print(content1)
-        loc_dict = XMLdict(content1,[LAT,LON,CITY,COUNTRY])
-        geoID = XMLval(content1, "geonameId")
+            print(localpath)
+        with open(localpath) as f:
+            content=f.read()
+        loc_dict = XMLdict(content,[LAT,LON,CITY,COUNTRY,REGION,TIMEZONE])
+    else:
+        try:
+            #First do a smart search to find the place
+            arg = arg.replace(" ","%20")    
+            url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
+            content1=str(urlopen(url1).read())
+            if verbose:
+                print(content1)
+            loc_dict = XMLdict(content1,[LAT,LON,CITY,COUNTRY])
+            geoID = XMLval(content1, "geonameId")
+            
+            #Now get more complete information to fill in the region/state and timezone    
+            url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
+            content2 = str(urlopen(url2).read())
         
-        #Now get more complete information to fill in the region/state and timezone    
-        url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
-        content2 = str(urlopen(url2).read())
-    
-        loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
-    except URLError:
-        #local
-        if verbose:
-            print("No internet, using local")
-        arg= sys.argv[1].strip()
-        localpath = os.path.join(scriptpath,"local",arg)
-        if os.path.exists(localpath):
+            loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
+            
+        except URLError as e:
             if verbose:
-                print(localpath)
-            with open(localpath) as f:
-                content=f.read()
-            loc_dict = XMLdict(content,[LAT,LON,CITY,COUNTRY,REGION,TIMEZONE])
-        else:
-            if verbose:
-                print("File not found")
+                print("URLError")
             sys.exit()
     if verbose:
         print(loc_dict)
