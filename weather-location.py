@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
-Created on Sat Oct  8 13:10:15 2016
+Copyright Ariel Sommer 2016
+License: GNU GPL (https://www.gnu.org/licenses/gpl.txt)
 
-Modify the config file for the XFCE weather app
-use data from an Ubuntu web server
+Modifies the config file for the XFCE weather app
+uses data from Ubuntu GeoIP or GeoNames.org
 
-Alternative, one could provide the city name and lookup Lat, Long:
-http://www.geonames.org/export/ws-overview.html
-
-@author: Ariel Sommer
 """
 import shutil
 from collections import OrderedDict
@@ -40,7 +36,7 @@ if len(sys.argv) > 1:
     #use the given location string
     arg = sys.argv[1].replace(" ","").strip()
     if verbose:
-        print "Using given " + arg
+        print( "Using given " + arg)
     url1 = "http://api.geonames.org/postalCodeSearch?placename=%s&maxRows=1&username=seventhsam" % arg
     LAT = "lat"
     LON = "lng"
@@ -52,7 +48,7 @@ if len(sys.argv) > 1:
     
     content1=urlopen(url1).read()
     if verbose:
-        print content1
+        print( content1)
     loc_dict1 = XMLdict(content1,[LAT,LON,CITY,COUNTRY,REGION,ZIP])
     
     lat = loc_dict1[LAT]
@@ -65,7 +61,7 @@ if len(sys.argv) > 1:
     loc_dict.update(loc_dict1)
     loc_dict.update(loc_dict2)
     if verbose:
-        print loc_dict
+        print( loc_dict)
 else:    
     
     file_like = urlopen("http://geoip.ubuntu.com/lookup")
@@ -92,7 +88,7 @@ with open(cfg_file) as f:
     for line in wrc_lines:
         line = line.strip()
         if line:
-            #print line
+            #print( line)
             LHS, RHS = line.split("=",1)            
             cfg_dict[LHS] = RHS
 
@@ -106,9 +102,6 @@ cfg_dict["loc_name"] = loc_name
 with open(cfg_file, "w") as f:
     for key in cfg_dict:
         f.write("%s=%s\n" % (key, cfg_dict[key]) )
-
-#tell the user the new location
-#print(loc_name)
 
 #print the time zone
 print(loc_dict[TIMEZONE])

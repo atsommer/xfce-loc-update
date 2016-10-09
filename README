@@ -1,0 +1,43 @@
+xfce-loc-update
+Ariel Sommer 2016
+
+Updates the location-related information on an XFCE system
+currently updates the following:
+    system time zone
+    weather app location
+    
+Installation:
+---------------------
+download the code and put it somewhere you want it to stay (THE_PATH)
+run the install script to create symlinks in ~/bin
+$ install-loc-update 
+* keep the files you downloaded in THE_PATH, they are called via symlinks
+
+Usage:
+---------------------
+call the main script from anywhere, it's on your path:
+$ update-loc  #guesses your location using Ubuntu GeoIP web service
+OR
+$ update-loc [info]
+use the given info, such as a zip code or city,state to determine location
+
+
+Uninstall:
+----------------------
+go to THE_PATH and run:
+$ uninstall-loc-update
+to remove the symlinks
+Then delete THE_PATH
+
+Credits:
+------------
+Uses the following free services:
+Ubuntu GeoIP
+Geonames.org
+
+License:
+------------
+GNU GPL (https://www.gnu.org/licenses/gpl.txt)
+you may re-use this code under the following conditions:
+1. acknowledge the original author(s)
+2. if distributing, make it open source

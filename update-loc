@@ -1,4 +1,7 @@
 #!/bin/bash
+#Copyright Ariel Sommer 2016
+#License: GNU GPL (https://www.gnu.org/licenses/gpl.txt)
+#
 #Updates the location on an xfce system:
 #   system time zone, weather app location
 #
