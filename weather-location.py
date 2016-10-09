@@ -52,7 +52,7 @@ if given:
     
     #First do a smart search to find the place    
     url1 = "http://api.geonames.org/search?q=%s&maxRows=1&username=%s" % (arg,uname)
-    content1=urlopen(url1).read()
+    content1=str(urlopen(url1).read())
     LAT = "lat"
     LON = "lng"
     CITY = "name"
@@ -65,7 +65,7 @@ if given:
     
     #Now get more complete information to fill in the region/state and timezone    
     url2 = "http://api.geonames.org/get?geonameId=%s&username=%s" % (geoID,uname)
-    content2 = urlopen(url2).read()
+    content2 = str(urlopen(url2).read())
     REGION = "adminCode1"
     TIMEZONE = "timezone"
     loc_dict.update( XMLdict(content2,[REGION, TIMEZONE]) )
@@ -74,7 +74,7 @@ if given:
 #    lon = loc_dict[LON]
 #    url3 = "http://api.geonames.org/timezone?lat=%s&lng=%s&username=%s" % (lat,lon,uname)
 #    TIMEZONE = "timezoneId"
-#    content3=urlopen(url3).read()
+#    content3=str(urlopen(url3).read())
 #    loc_dict.update( XMLdict(content3,[TIMEZONE]) )
     
     if verbose:
@@ -82,7 +82,9 @@ if given:
 else:    
     
     file_like = urlopen("http://geoip.ubuntu.com/lookup")
-    content = file_like.read()
+    content = str(file_like.read())
+    if verbose:
+        print(content)
     LAT = "Latitude"
     LON = "Longitude"
     CITY = "City"
