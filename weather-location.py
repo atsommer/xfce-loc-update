@@ -6,12 +6,14 @@ License: GNU GPL (https://www.gnu.org/licenses/gpl.txt)
 Modifies the config file for the XFCE weather app
 uses data from Ubuntu GeoIP or GeoNames.org
 
+Supports both python 2 and 3
 """
 import shutil
 from collections import OrderedDict
 import os
 import sys
 import inspect
+import glob
 if sys.version_info.major == 3:
     from urllib.request import urlopen, URLError
 elif sys.version_info.major == 2:
@@ -113,8 +115,12 @@ else:
         sys.exit()
 
 #Modify the Weather settings file
-cfg_file = os.path.expanduser("~/.config/xfce4/panel/weather-3.rc")
-if os.path.exists(cfg_file):
+pattern = os.path.expanduser("~/.config/xfce4/panel/weather-*.rc")
+weather_files = glob.glob(pattern)
+#in case there's more than one, modify them all
+for cfg_file in weather_files:
+    if not os.path.isfile(cfg_file):
+        continue
     #0. make a backup copy
     shutil.copyfile(cfg_file, cfg_file+".backup")
     

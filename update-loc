@@ -16,6 +16,8 @@
 # 2. set system time zone
 # 3. start xfce4-panel
 
+echo "Requesting root privileges to update system timezone"
+sudo echo -n
 #0.
 xfce4-panel -q
 

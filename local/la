@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<geonames style="MEDIUM">
+<totalResultsCount>14757</totalResultsCount>
+<geoname>
+<toponymName>Los Angeles</toponymName>
+<name>Los Angeles</name>
+<lat>34.05223</lat>
+<lng>-118.24368</lng>
+<geonameId>5368361</geonameId>
+<countryCode>USA</countryCode>
+<countryName>United States</countryName>
+<fcl>P</fcl>
+<fcode>PPLA2</fcode>
+<timezone>America/Los_Angeles</timezone>
+<adminCode1>CA</adminCode1>
+</geoname>
+</geonames>
+
